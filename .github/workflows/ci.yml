@@ -8,6 +8,7 @@ on:
   pull_request:
     branches:
       - main
+      - hng12_track2 
 
 jobs:
   test:
