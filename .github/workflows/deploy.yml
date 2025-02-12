@@ -24,11 +24,13 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Deploy to Render
+      - name: deploy
         env:
           RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
+          RENDER_SERVICE_ID: "srv-cum6ofogph6c73dc7mjg"
         run: |
           curl -X POST \
             -H "Authorization: Bearer $RENDER_API_KEY" \
-            -d '{"serviceId": "your-render-service-id"}' \
-            https://api.render.com/v1/services/{your-render-service-id}/deploys
+            -H "Content-Type: application/json" \
+            -d '{"clearCache": true}' \
+            https://api.render.com/v1/services/$RENDER_SERVICE_ID/deploys
