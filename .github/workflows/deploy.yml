@@ -14,23 +14,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: "3.12"
-
-      - name: Install dependencies
+      - name: Trigger Render Deploy
         run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
-
-      - name: deploy
-        env:
-          RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
-          RENDER_SERVICE_ID: "srv-cum6ofogph6c73dc7mjg"
-        run: |
-          curl -X POST \
-            -H "Authorization: Bearer $RENDER_API_KEY" \
-            -H "Content-Type: application/json" \
-            -d '{"clearCache": true}' \
-            https://api.render.com/v1/services/$RENDER_SERVICE_ID/deploys
+          curl -X POST ${{ secrets.RENDER_DEPLOY_HOOK }}
