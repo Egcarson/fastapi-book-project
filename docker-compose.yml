@@ -1,11 +1,13 @@
 version: "3.8"
 
 services:
-  fastapi:
+  fastapi_app:
     build: .
-    container_name: fastapi
+    container_name: fastapi_app
     expose:
       - 8000  # Expose port 8000 to the Nginx container
+    ports:
+      - "8000:8000"
     networks:
       - app-network
 
@@ -17,81 +19,10 @@ services:
     ports:
       - "80:80"  # Expose Nginx on port 80
     depends_on:
-      - fastapi
+      - fastapi_app
     networks:
       - app-network
 
 networks:
   app-network:
     driver: bridge
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
