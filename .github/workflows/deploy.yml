@@ -1,14 +1,12 @@
 name: deploy
 
 on:
-  workflow_run:
-    workflows: ["test"]   # Run only if CI passes
-    types:
-      - completed
+  push:
+    branches:
+      - main
 
 jobs:
   deploy:
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}  # Only deploy if tests pass
     runs-on: ubuntu-latest
 
     steps:
@@ -24,12 +22,9 @@ jobs:
 
       - name: Deploy to Server
         run: |
-          ssh prevail@54.245.237.108 << EOF
+          ssh -o StrictHostKeyChecking=no prevail@54.245.237.108 <<EOF
             cd /home/prevail/fastapi-book-project
             git pull
-            docker compose down
-            docker compose up -d --build
+            docker-compose down
+            docker-compose up -d --build
           EOF
-
-      - name: Clean Up SSH Key
-        run: rm -f ~/.ssh/id_rsa
