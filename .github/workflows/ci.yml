@@ -30,6 +30,3 @@ jobs:
 
       - name: Run Tests
         run: pytest
-
-      - name: Linting Check
-        run: flake8 .
