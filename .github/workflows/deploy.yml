@@ -1,28 +1,35 @@
 name: deploy
 
 on:
-  push:
-    branches:
-      - main
+  workflow_run:
+    workflows: ["test"]   # Run only if CI passes
+    types:
+      - completed
 
 jobs:
   deploy:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}  # Only deploy if tests pass
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout Code
-      uses: actions/checkout@v4
+      - name: Checkout Code
+        uses: actions/checkout@v4
 
-    - name: Set up SSH Key
-      run: |
-        mkdir -p ~/.ssh
-        echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-        chmod 600 ~/.ssh/id_rsa
-        ssh-keyscan -H 54.245.237.108 >> ~/.ssh/known_hosts
+      - name: Set up SSH Key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H 54.245.237.108 >> ~/.ssh/known_hosts
 
-    - name: Deploy to Server
-      run: |
-        ssh prevail@54.245.237.108 "cd /home/prevail/fastapi-book-project && git pull && docker-compose down && docker-compose up -d --build"
+      - name: Deploy to Server
+        run: |
+          ssh prevail@54.245.237.108 << EOF
+            cd /home/prevail/fastapi-book-project
+            git pull
+            docker compose down
+            docker compose up -d --build
+          EOF
 
-    - name: Clean Up Local SSH Key
-      run: rm -f ~/.ssh/id_rsa
+      - name: Clean Up SSH Key
+        run: rm -f ~/.ssh/id_rsa
