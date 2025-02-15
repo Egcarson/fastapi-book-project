@@ -1,4 +1,4 @@
-name: CD Pipeline
+name: deploy
 
 on:
   push:
@@ -7,13 +7,22 @@ on:
 
 jobs:
   deploy:
-    name: deploy
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+    - name: Checkout Code
+      uses: actions/checkout@v4
 
-      - name: Trigger Render Deploy
-        run: |
-          curl -X POST ${{ secrets.RENDER_DEPLOY_HOOK }}
+    - name: Set up SSH Key
+      run: |
+        mkdir -p ~/.ssh
+        echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+        chmod 600 ~/.ssh/id_rsa
+        ssh-keyscan -H 54.245.237.108 >> ~/.ssh/known_hosts
+
+    - name: Deploy to Server
+      run: |
+        ssh prevail@54.245.237.108 "cd /home/prevail/fastapi-book-project && git pull && docker-compose down && docker-compose up -d --build"
+
+    - name: Clean Up Local SSH Key
+      run: rm -f ~/.ssh/id_rsa
