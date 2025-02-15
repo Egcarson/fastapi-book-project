@@ -1,33 +1,32 @@
-name: CI Pipeline
+name: test
 
 on:
   push:
     branches:
-      - main
-      - hng12_track2 
-  pull_request:
-    branches:
-      - main
-      - hng12_track2 
+      - main  # You can change this to any branch you want to trigger the CI pipeline
 
 jobs:
-  test:
-    name: test
-    runs-on: ubuntu-latest
+  build:
+    runs-on: ubuntu-latest  # Set the environment for the CI process
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4  # Checkout the code from GitHub repository
 
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: "3.12"
+          python-version: "3.12"  # Specify the Python version
 
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r requirements.txt
+          pip install -r requirements.txt  # Install all dependencies from the requirements file
 
-      - name: Run Pytest
-        run: pytest --exitfirst --verbose --disable-warnings
+      - name: Run Tests
+        run: |
+          pytest  # Run your tests (you can modify it to run any other test framework you're using)
+
+      - name: Linting Check
+        run: |
+          flake8 .  # Run linting checks to make sure your code follows best practices
